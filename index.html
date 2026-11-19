@@ -310,7 +310,7 @@ function hourlyCard(t){
   let h='<div class="task" style="background:transparent"><div class="ttl">'+esc(t.title)+'</div><div class="det">'+esc(t.detail||'')+'</div><div class="slots" style="margin-top:10px">';
   for(let hr=from;hr<=to;hr++){
     const k=entryKey(viewDate(),t.id,pad(hr));const e=S.logs[k];const slotM=hr*60;const past=!td||nowM>=slotM;const over=td&&!e&&nowM>=slotM+60;
-    let turn='';if(!e){const pr=S.people.filter(p=>toMin(p.start)<=slotM+1&&toMin(p.end)>slotM+1);pr.sort((a,b)=>(counts[a.name]||0)-(counts[b.name]||0));if(pr.length)turn=pr[0].name;}
+    let turn='';if(!e){let pr=S.people.filter(p=>toMin(p.start)<=slotM+1&&toMin(p.end)>slotM+1);if(t.who&&t.who.length)pr=pr.filter(p=>t.who.includes(p.name));pr.sort((a,b)=>{const d=(counts[a.name]||0)-(counts[b.name]||0);if(d!==0)return d;const wo=t.who&&t.who.length?t.who:[];const ai=wo.indexOf(a.name),bi=wo.indexOf(b.name);if(ai>=0&&bi>=0)return ai-bi;return 0;});if(pr.length)turn=pr[0].name;}
     h+='<div class="slot'+(e?' done':'')+(over?' over':'')+(!past?' future':'')+'"><b>'+pad(hr)+':00</b>';
     if(e)h+='<span class="donetxt">✓ '+esc(e.p)+' · '+esc(e.t)+'</span>'+(td&&(e.p===myPerson()||isAdmin())?'<br><button type="button" class="link" data-act="undo" data-v="'+esc(k)+'">Deshacer</button>':'');
     else{h+=(turn?'<span class="det">Le toca a '+esc(turn)+'</span>':'')+(over?'<br><span class="chip warn">sin hacer</span>':'');if(td&&past)h+='<br><button type="button" class="btn sm" data-act="done" data-t="'+esc(t.id)+'" data-s="'+pad(hr)+'" data-k="check">Lo hice yo</button>';}
